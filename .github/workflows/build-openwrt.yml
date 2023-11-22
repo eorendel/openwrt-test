@@ -25,7 +25,7 @@
 name: Build OpenWrt-K
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 1 1 * *'
 #  push:
 #    branches:
 #      - main
@@ -331,30 +331,7 @@ jobs:
           sed -i 's/256/1024/' ./target/linux/${{ matrix.target }}/image/Makefile
           bash $GITHUB_WORKSPACE/scripts/fix_problem.sh ${{ matrix.config }}
 
-      - name: 更新smartdns、netdata
-        run: |
-          WORKINGDIR="$OPENWRT_ROOT_PATH/feeds/packages/net/smartdns"
-          mkdir $WORKINGDIR -p
-          rm $WORKINGDIR/* -fr
-          curl -s -L --retry 6 https://github.com/pymumu/openwrt-smartdns/archive/master.zip -o $WORKINGDIR/master.zip
-          unzip $WORKINGDIR/master.zip -d $WORKINGDIR
-          mv $WORKINGDIR/openwrt-smartdns-master/* $WORKINGDIR/
-          rmdir $WORKINGDIR/openwrt-smartdns-master
-          rm $WORKINGDIR/master.zip
-          LUCIBRANCH="master"
-          WORKINGDIR="$OPENWRT_ROOT_PATH/feeds/luci/applications/luci-app-smartdns"
-          mkdir $WORKINGDIR -p
-          rm $WORKINGDIR/* -fr
-          curl -s -L --retry 6 https://github.com/pymumu/luci-app-smartdns/archive/${LUCIBRANCH}.zip -o $WORKINGDIR/${LUCIBRANCH}.zip
-          unzip $WORKINGDIR/${LUCIBRANCH}.zip -d $WORKINGDIR
-          mv $WORKINGDIR/luci-app-smartdns-${LUCIBRANCH}/* $WORKINGDIR/
-          rmdir $WORKINGDIR/luci-app-smartdns-${LUCIBRANCH}
-          rm $WORKINGDIR/${LUCIBRANCH}.zip
-          WORKINGDIR="$OPENWRT_ROOT_PATH/feeds/packages/admin/netdata"
-          mkdir $WORKINGDIR -p
-          rm $WORKINGDIR/* -fr
-          cp -RT $CMZJ_PATCH_ROOT_PATH/netdata $WORKINGDIR
-
+  
       - name: 安装 feeds
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: ./scripts/feeds install -a
@@ -680,12 +657,6 @@ jobs:
             echo "::notice ::未检测到luci-app-openclash配置为编译进固件,退出执行下载openclash内核。"
             rm -rf $OPENWRT_ROOT_PATH/files/etc/openclash
           fi
-
-      - name: 更新BT Tracker
-        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
-        run: |
-         export bt_tracker="$(curl  -s -L --retry 6 https://github.com/XIU2/TrackersListCollection/raw/master/all_aria2.txt || curl  -s -L --retry 6 https://cf.trackerslist.com/all_aria2.txt)"
-         sed -i "s#^uci set aria2.main.bt_tracker=.*#uci set aria2.main.bt_tracker=\'$bt_tracker\'#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-chenmozhijin
 
       - name: 设置时区、主机名与IP
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
