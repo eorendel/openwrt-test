@@ -22,7 +22,7 @@
 #SOFTWARE.
 #=============================================================================#
 
-name: Build OpenWrt-K
+name: Build OpenWrt
 on:
   schedule:
     - cron: '0 1 1 * *'
