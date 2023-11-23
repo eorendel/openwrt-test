@@ -22,16 +22,7 @@
 4. [常见问题](https://github.com/chenmozhijin/OpenWrt-K/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
 
 ## 固件介绍
-
-1. 基于OpenWrt官方源码编译
-2. 自带丰富的LuCI插件与软件包（见内置功能）
-3. 自带SmartDNS+AdGuard Home配置（AdGuard Home 默认密码：```password```）
-4. 随固件编译几乎全部kmod（无sfe），拒绝kernel版本不兼容(kmod在Releases allkmod.zip中，建议与固件一同下载)
-5. 固件自带OpenWrt-K工具支持升级官方源没有的软件包（使用```openwrt-k```命令）
-6. 提供多种格式固件以应对不同需求
-
-### 内置功能
-
+基于OpenWrt官方源码编译
 已内置以下软件包：
 
 LuCI插件：  
