@@ -331,7 +331,6 @@ jobs:
           sed -i 's/256/1024/' ./target/linux/${{ matrix.target }}/image/Makefile
           bash $GITHUB_WORKSPACE/scripts/fix_problem.sh ${{ matrix.config }}
 
-  
       - name: 安装 feeds
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: ./scripts/feeds install -a
@@ -464,199 +463,6 @@ jobs:
             cat $PACKAGEDEPWARNING
           fi
           [[ -d $TMPDIR ]] && rm -rf "$TMPDIR"
-
-      - name: 下载AdGuardHome核心与DNS名单
-        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
-        run: |
-          if [ "$(grep -c "^CONFIG_PACKAGE_luci-app-adguardhome=y$" .config)" -ne '0' ];then
-              Archt="$(sed -n '/CONFIG_ARCH=/p' .config | sed -e 's/CONFIG_ARCH\=\"//' -e 's/\"//')"
-              case $Archt in
-              "i386")
-              Arch="386"
-              ;;
-              "i686")
-              Arch="386"
-              ;;
-              "x86_64")
-              Arch="amd64"
-              ;;
-              "mipsel")
-              Arch="mipsle"
-              ;;
-              "mips64el")
-              Arch="mips64le"
-              Arch="mipsle"
-              echo -e "mips64el use $Arch may have bug"
-              ;;
-              "mips")
-              Arch="mips"
-              ;;
-              "mips64")
-              Arch="mips64"
-              Arch="mips"
-              echo -e "mips64 use $Arch may have bug"
-              ;;
-              "arm")
-              if [ "$(grep -c "CONFIG_arm_" .config)" -ne '0' ];then
-                armv="$(sed -n '/CONFIG_arm_/p' .config | sed -e 's/CONFIG_arm_//' -e 's/=y//')"
-              else
-                armv=v5
-              fi
-              Arch="arm$armv"
-              ;;
-              "aarch64")
-              Arch="arm64"
-              ;;
-              "powerpc")
-              Arch="ppc"
-              Arch=1
-              echo -e "error not support $Archt"
-              ;;
-              "powerpc64")
-              Arch="ppc64"
-              Arch=1
-              echo -e "error not support $Archt"
-              ;;
-              *)
-              echo -e "error not support $Archt if you can use offical release please issue a bug"
-              Arch=1
-              ;;
-              esac
-              if [ "$Arch" != 1 ];then
-                echo "::notice ::检测到luci-app-adguardhome配置为编译进固件,下载DNS名单与架构为$Arch的AdGuardHome核心"
-                mkdir -p ./files/usr/bin/AdGuardHome/tmp
-                rm -rf ./files/usr/bin/AdGuardHome/tmp/*
-                latest_ver="$(curl -s https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
-                curl -s -L --retry 6 https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz -o ./files/usr/bin/AdGuardHome/tmp/AdGuardHome.tar.gz
-                tar -zxf "./files/usr/bin/AdGuardHome/tmp/AdGuardHome.tar.gz" -C "./files/usr/bin/AdGuardHome/tmp/"
-                mv -f ./files/usr/bin/AdGuardHome/tmp/AdGuardHome/AdGuardHome ./files/usr/bin/AdGuardHome
-                rm -rf ./files/usr/bin/AdGuardHome/tmp
-                chmod 755 $OPENWRT_ROOT_PATH/files/usr/bin/AdGuardHome/AdGuardHome
-                echo "下载AdGuardHome DNS黑白名单"
-                mkdir -p ./files/usr/bin/AdGuardHome/data/filters
-                cd $OPENWRT_ROOT_PATH/files/usr/bin/AdGuardHome/data/filters
-                curl -o 1628750870.txt https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt -s -L --retry 6
-                curl -o 1628750871.txt https://anti-ad.net/easylist.txt -s -L --retry 6
-                curl -o 1677875715.txt https://easylist-downloads.adblockplus.org/easylist.txt -s -L --retry 6
-                curl -o 1677875716.txt https://easylist-downloads.adblockplus.org/easylistchina.txt -s -L --retry 6
-                curl -o 1677875717.txt https://cdn.jsdelivr.net/gh/cjx82630/cjxlist@master/cjx-annoyance.txt -s -L --retry 6
-                curl -o 1677875718.txt https://cdn.jsdelivr.net/gh/zsakvo/AdGuard-Custom-Rule@master/rule/zhihu-strict.txt -s -L --retry 6
-                curl -o 1677875720.txt https://gist.githubusercontent.com/Ewpratten/a25ae63a7200c02c850fede2f32453cf/raw/b9318009399b99e822515d388b8458557d828c37/hosts-yt-ads -s -L --retry 6
-                curl -o 1677875721.txt https://raw.githubusercontent.com/adbyby/xwhyc-rules/master/lazy.txt -s -L --retry 6
-                curl -o 1677875722.txt https://raw.githubusercontent.com/adbyby/xwhyc-rules/master/v -s -L --retry 6
-                curl -o 1677875724.txt https://raw.githubusercontent.com/banbendalao/ADgk/master/ADgk.txt -s -L --retry 6
-                curl -o 1677875725.txt https://www.i-dont-care-about-cookies.eu/abp/ -s -L --retry 6
-                curl -o 1677875726.txt https://raw.githubusercontent.com/jdlingyu/ad-wars/master/hosts -s -L --retry 6
-                curl -o 1677875727.txt https://raw.githubusercontent.com/Goooler/1024_hosts/master/hosts -s -L --retry 6
-                curl -o 1677875728.txt https://winhelp2002.mvps.org/hosts.txt -s -L --retry 6
-                curl -o 1677875733.txt https://cdn.jsdelivr.net/gh/hl2gu -s -L --retry 6
-                curl -o 1677875734.txt https://cdn.jsdelivr.net/gh/hg1978/AdGuard-Home-Whitelist@master/whitelist.txt -s -L --retry 6
-                curl -o 1677875735.txt https://cdn.jsdelivr.net/gh/mmotti/adguard-home-filters@master/whitelist.txt -s -L --retry 6
-                curl -o 1677875737.txt https://cdn.jsdelivr.net/gh/liwenjie119/adg-rules@master/white.txt -s -L --retry 6
-                curl -o 1677875739.txt https://cdn.jsdelivr.net/gh/JamesDamp/AdGuard-Home---Personal-Whitelist@master/AdGuardHome-Whitelist.txt -s -L --retry 6
-                curl -o 1677875740.txt https://cdn.jsdelivr.net/gh/scarletbane/AdGuard-Home-Whitelist@main/whitelist.txt -s -L --retry 6
-                ls
-                echo "制作AdGuardHome上游 DNS 服务器规则"
-                cd  $WORKSPACE_ROOT_PATH
-                mkdir -p tmp
-                cd $WORKSPACE_ROOT_PATH/tmp
-                ls
-                rm -rf *
-                curl -s -L --retry 6 --connect-timeout 20 "https://raw.githubusercontent.com/chenmozhijin/AdGuardHome-Rules/main/AdGuardHome-dnslist(by%20cmzj).yaml" -o "AdGuardHomednslist" 
-                cat ./AdGuardHomednslist >> $OPENWRT_ROOT_PATH/files/etc/AdGuardHome-dnslist"(by cmzj)".yaml
-                echo "AdGuardHome-dnslist(by cmzj).yaml" >> $LOG_PATH/AdGuardHome.log
-                cat $OPENWRT_ROOT_PATH/files/etc/AdGuardHome-dnslist"(by cmzj)".yaml >> $LOG_PATH/AdGuardHome.log
-                rm -rf $WORKSPACE_ROOT_PATH/tmp/*
-                echo "files"
-                ls -la $(find $OPENWRT_ROOT_PATH/files/ -type d)
-              else
-                echo "::warning ::AdGuardHome核心不支持此架构,退出执行下载AdGuardHome核心与DNS名单。"
-                rm -rf $OPENWRT_ROOT_PATH/files/etc/AdGuardHome-dnslist\(by\ cmzj\).yaml $OPENWRT_ROOT_PATH/files/etc/AdGuardHome.yaml $OPENWRT_ROOT_PATH/files/usr/bin/AdGuardHome
-              fi
-          else
-            echo "::notice ::未检测到luci-app-adguardhome配置为编译进固件,退出执行。"
-            rm -rf $OPENWRT_ROOT_PATH/files/etc/AdGuardHome-dnslist\(by\ cmzj\).yaml $OPENWRT_ROOT_PATH/files/etc/AdGuardHome.yaml $OPENWRT_ROOT_PATH/files/usr/bin/AdGuardHome
-          fi
-
-      - name: 下载openclash内核
-        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
-        run: |
-          if [ "$(grep -c "^CONFIG_PACKAGE_luci-app-openclash=y$" .config)" -ne '0' ];then
-              ARCHT="$(sed -n '/CONFIG_ARCH=/p' .config | sed -e 's/CONFIG_ARCH\=\"//' -e 's/\"//')"
-              case "${ARCHT}" in
-              	aarch64)
-              		CORE_ARCH="linux-arm64"
-              		;;
-              	arm)
-                  if [ "$(grep -c "CONFIG_arm_" .config)" -ne '0' ];then
-                    armv="$(sed -n '/CONFIG_arm_/p' .config | sed -e 's/CONFIG_arm_//' -e 's/=y//')"
-                  else
-                    armv=v5
-                  fi
-              		CORE_ARCH="linux-arm$armv"
-              		;;
-              	i386)
-              		CORE_ARCH="linux-386"
-              		;;
-              	mips64)
-              		CORE_ARCH="linux-mips64"
-              		;;
-              	mips)
-              		CORE_ARCH="linux-mips-softfloat"
-              		;;
-              	mipsel)
-              		CORE_ARCH="linux-mipsle-softfloat"
-              		;;
-              	x86_64)
-              		CORE_ARCH="linux-amd64"
-              		;;
-              	*)
-              		CORE_ARCH="1"
-              		;;
-              esac
-              echo "::notice ::检测到luci-app-openclash配置为编译进固件,下载架构为$CORE_ARCH的openclash内核"
-              if [ "$CORE_ARCH" != 1 ];then
-                OpenClashTMPDIR=$WORKSPACE_ROOT_PATH/tmp/openclash
-                dev_core_path="$OPENWRT_ROOT_PATH/files/etc/openclash/core/clash"
-                tun_core_path="$OPENWRT_ROOT_PATH/files/etc/openclash/core/clash_tun"
-                meta_core_path="$OPENWRT_ROOT_PATH/files/etc/openclash/core/clash_meta"
-                CPU_MODEL=$CORE_ARCH
-                RELEASE_BRANCH=master
-                mkdir -p $OpenClashTMPDIR $OPENWRT_ROOT_PATH/files/etc/openclash/core/
-                rm -rf $OpenClashTMPDIR/*
-                CORE_LV=$(curl -s -L --retry 6 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/core_version|sed -n 2p)
-                curl -s -L --retry 6 -o $OpenClashTMPDIR/clash_tun.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/"$RELEASE_BRANCH"/premium/clash-"$CPU_MODEL"-"$CORE_LV".gz
-                curl -s -L --retry 6 -o $OpenClashTMPDIR/clash_meta.tar.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/"$RELEASE_BRANCH"/meta/clash-"$CPU_MODEL".tar.gz
-                curl -s -L --retry 6 -o $OpenClashTMPDIR/clash.tar.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/"$RELEASE_BRANCH"/dev/clash-"$CPU_MODEL".tar.gz
-                #tun
-                gzip -d $OpenClashTMPDIR/clash_tun.gz
-                rm -rf $OpenClashTMPDIR/clash_tun.gz
-                rm -rf "$tun_core_path"
-                chmod 4755 $OpenClashTMPDIR/clash_tun
-                mv $OpenClashTMPDIR/clash_tun "$tun_core_path"
-                #mate
-                rm -rf "$meta_core_path"
-                tar zxvf $OpenClashTMPDIR/clash_meta.tar.gz -C $OpenClashTMPDIR
-                mv $OpenClashTMPDIR/clash $OpenClashTMPDIR/clash_meta
-                rm -rf  $OpenClashTMPDIR/clash_meta.tar.gz
-                chmod 4755 $OpenClashTMPDIR/clash_meta
-                mv $OpenClashTMPDIR/clash_meta "$meta_core_path"
-                #dev
-                rm -rf "$dev_core_path"
-                tar zxvf $OpenClashTMPDIR/clash.tar.gz -C $OpenClashTMPDIR
-                rm -rf $OpenClashTMPDIR/clash.tar.gz
-                chmod 4755 $OpenClashTMPDIR/clash
-                mv $OpenClashTMPDIR/clash "$dev_core_path"
-                echo "files"
-                ls -la $(find $OPENWRT_ROOT_PATH/files/ -type d)
-              else
-                echo "::warning ::openclash内核不支持此架构,退出执行下载openclash内核。"
-                rm -rf $OPENWRT_ROOT_PATH/files/etc/openclash
-              fi
-          else
-            echo "::notice ::未检测到luci-app-openclash配置为编译进固件,退出执行下载openclash内核。"
-            rm -rf $OPENWRT_ROOT_PATH/files/etc/openclash
-          fi
 
       - name: 设置时区、主机名与IP
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
@@ -854,10 +660,194 @@ jobs:
           name: build-package-logs-${{ matrix.config }}
           path: "${{ env.LOG_PATH }}"
 
+  build-Image_Builder:
+    runs-on: ubuntu-latest
+    needs: [planning,prepare,build1]
+    strategy:
+      matrix: ${{ fromJSON(needs.planning.outputs.matrix) }}
+    name: build-Image_Builder-${{ matrix.config }}
+    steps:
+      - name: 将存储库签出到运行器
+        uses: actions/checkout@v3
+
+      - name: 输出运行器硬件信息
+        run: |
+          bash $GITHUB_WORKSPACE/scripts/hardware_info.sh
+
+      - name: 清理空间
+        run: |
+          bash $GITHUB_WORKSPACE/scripts/clear_space.sh
+
+      - name: 安装编译依赖
+        run: |
+          bash $GITHUB_WORKSPACE/scripts/install_compilation_dependencies.sh
+
+      - name: 合并磁盘
+        run: |
+          bash $GITHUB_WORKSPACE/scripts/merge_disk.sh
+
+      - name: 下载build1_WORKSPACE
+        uses: actions/download-artifact@v3
+        with:
+          name: build1_WORKSPACE-${{ matrix.config }}
+
+      - name: 解压
+        run: |
+          sudo mv $GITHUB_WORKSPACE/build1_WORKSPACE.tgz /build1_WORKSPACE.tgz
+          tar xvpfz /build1_WORKSPACE.tgz  -C $GITHUB_WORKSPACE
+          sudo rm -rf /build1_WORKSPACE.tgz
+          cat build1_ENV
+          cat build1_ENV >> $GITHUB_ENV
+
+      - name: 环境变量
+        run: env
+
+      - name: 加载自定义配置并生成配置文件
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          if [ -n "$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//')" ];then
+            kmod_compile_exclude_list=$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//' -e 's/,$//g' -e 's#^#\\(#' -e "s#,#\\\|#g" -e "s/$/\\\)/g" )
+            echo "::notice ::kmod编译排除列表：$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//')"
+          else
+            echo "::warning ::kmod编译排除列表无法获取或为空，这很有可能导致编译失败。"
+          fi
+          sed -n  '/^# CONFIG_PACKAGE_kmod/p' .config | sed '/# CONFIG_PACKAGE_kmod is not set/d'|sed 's/# //g'|sed 's/ is not set/=m/g' | sed "s/\($kmod_compile_exclude_list\)=m/\1=n/g" >> .config
+          make defconfig
+          sed -n  '/^# CONFIG_PACKAGE_kmod/p' .config | sed '/# CONFIG_PACKAGE_kmod is not set/d'|sed 's/# //g'|sed 's/ is not set/=m/g' | sed "s/\($kmod_compile_exclude_list\)=m/\1=n/g" >> .config
+          make defconfig
+          sed -n  '/^# CONFIG_PACKAGE_kmod/p' .config | sed '/# CONFIG_PACKAGE_kmod is not set/d'|sed 's/# //g'|sed 's/ is not set/=m/g' | sed "s/\($kmod_compile_exclude_list\)=m/\1=n/g" >> .config
+          make defconfig
+          sed -i -n '/CONFIG_PACKAGE_kmod/p' .config
+          echo CONFIG_IB=y >> .config
+          echo CONFIG_IB_STANDALONE=y >> .config
+          cat $GITHUB_WORKSPACE/config/${{ matrix.config }}/{target,image}.config >> $OPENWRT_ROOT_PATH/.config
+          make defconfig
+          sed -i -e  "/^CONFIG_[a-zA-Z0-9]\{1,99\}_IMAGES=y$/s/=y/=cmzjnot/g" -e "/^CONFIG_GRUB_IMAGES=cmzjnot$/s/=cmzjnot/=y/g" -e "/^CONFIG_[a-zA-Z0-9]\{1,99\}_IMAGES=cmzjnot$/s/=cmzjnot/=n/g" .config
+          sed -i -e  "/^CONFIG_TARGET_ROOTFS_TARGZ=y$/s/=y/=n/g" .config
+          sed -i -e  "/^CONFIG_TARGET_ROOTFS_CPIOGZ=y$/s/=y/=n/g" .config
+          make defconfig
+          if [ "$(sed -n "/$kmod_compile_exclude_list/p" .config| grep -c "=m$")" -ne '0' ];then
+            echo "::error ::检测到有kmod被kmod排除列表匹配但仍然设置为编译为模块(=m),到build-Image_Builder的加载自定义配置并生成配置文件步骤查看详情"
+            sed -n "/$kmod_compile_exclude_list/p" .config| grep "=m$"
+          fi
+          if [ "$(sed -n "/$kmod_compile_exclude_list/p" .config| grep -c "=y$")" -ne '0' ];then
+            echo "::warning ::检测到有kmod被配置为编译进固件(=y)同时在kmod排除列表中,到build-Image_Builder的加载自定义配置并生成配置文件步骤查看详情"
+            sed -n "/$kmod_compile_exclude_list/p" .config| grep "=y$"
+          fi
+          echo "以下是配置差异文件的内容"
+          ./scripts/diffconfig.sh
+
+      - name: 下载 dl 库
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          make download -j16
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+          make download -j16 || make download -j1 V=s
+
+      - name: 构建内核
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          make target/compile -j $(($(nproc)+1)) || make target/compile -j$(nproc) V=s || make target/compile -j1 V=s
+          echo "======================="
+          echo "空间使用情况:"
+          echo "======================="
+          df --total  -Th
+          echo "======================="
+
+      - name: 清理包
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          make package/cleanup -j $(($(nproc)+1)) || make package/cleanup -j$(nproc) V=s || make package/cleanup -j1 V=s
+          echo "======================="
+          echo "空间使用情况:"
+          echo "======================="
+          df --total  -Th
+          echo "======================="
+
+      - name: 编译并生成安装包
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          make package/compile -j $(($(nproc)+1)) || make package/compile -j1 V=s
+          make package/install -j $(($(nproc)+1)) || make package/install -j1 V=s
+          echo "======================="
+          echo "空间使用情况:"
+          echo "======================="
+          df --total  -Th
+          echo "======================="
+          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
+          du -h --max-depth=1 ./build_dir
+          du -h --max-depth=1 ./bin
+
+      - name: 制作Image Builder包
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          make target/install -j $(($(nproc)+1)) || make target/install -j$(nproc) V=s || make target/install -j1 V=s
+          echo "======================="
+          echo "空间使用情况:"
+          echo "======================="
+          df --total  -Th
+          echo "======================="
+          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
+          du -h --max-depth=1 ./build_dir
+          du -h --max-depth=1 ./bin
+
+      - name: 制作包索引、镜像概述信息并计算校验和
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          make package/index -j $(($(nproc)+1)) || make package/index -j$(nproc) V=s || make package/index -j1 V=s
+          make json_overview_image_info
+          make checksum
+          echo "======================="
+          echo "空间使用情况:"
+          echo "======================="
+          df --total  -Th
+          echo "======================="
+          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
+          du -h --max-depth=1 ./build_dir
+          du -h --max-depth=1 ./bin
+
+      - name: 准备 artifact
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          mkdir -p ./artifact/{package,kmod,buildinfo}
+          echo "artifact-/bin" >> $LOG_PATH/cmzj_package.log
+          ls -l ./bin/** >> $LOG_PATH/cmzj_package.log
+          ls -l ./bin/targets/${{ matrix.target }}/${{ matrix.subtarget }}/** >> $LOG_PATH/Image_Builder-bin.log
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./artifact/package/ -type f -name "kmod-*") ./artifact/kmod/
+
+      - name: 上传 kmod
+        uses: actions/upload-artifact@v3
+        with:
+          name: OpenWrt-kmod-${{ matrix.config }}
+          path: ${{ env.OPENWRT_ROOT_PATH }}/artifact/kmod/
+
+      - name: 上传 Image Builder
+        uses: actions/upload-artifact@v3
+        with:
+          name: OpenWrt-Image_Builder-${{ matrix.config }}
+          path: ${{ env.OPENWRT_ROOT_PATH }}/bin/targets/${{ matrix.target }}/${{ matrix.subtarget }}/openwrt-imagebuilder-${{ matrix.target }}-${{ matrix.subtarget }}.Linux-x86_64.tar.xz
+
+      - name: 收集日志
+        if: success() || failure()
+        run: |
+          mkdir -p $LOG_PATH/openwrt-logs
+          cp -RT $OPENWRT_ROOT_PATH/logs $LOG_PATH/openwrt-logs || echo "没有openwrt/logs"
+          cp $OPENWRT_ROOT_PATH/.config $LOG_PATH/openwrt.config || echo "没有openwrt/.config"
+
+      - name: 上传日志
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-Image_Builder-logs-${{ matrix.config }}
+          path: "${{ env.LOG_PATH }}"
 
   build-Image:
     runs-on: ubuntu-latest
-    needs:  [planning,prepare,build1,build-package]
+    needs:  [planning,prepare,build1,build-package,build-Image_Builder]
     strategy:
       matrix: ${{ fromJSON(needs.planning.outputs.matrix) }}
     name: build-Image-${{ matrix.config }}
@@ -997,7 +987,7 @@ jobs:
           path: "${{ env.LOG_PATH }}"
 
   upload:
-    needs: [planning,prepare,build1,build-package,build-Image]
+    needs: [planning,prepare,build1,build-package,build-Image_Builder,build-Image]
     strategy:
       matrix: ${{ fromJSON(needs.planning.outputs.matrix) }}
     name: upload-${{ matrix.config }}
