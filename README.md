@@ -34,7 +34,7 @@
 
 已内置以下软件包：
 
-1. LuCI插件：  
+LuCI插件：  
   [luci-app-adguardhome](https://github.com/chenmozhijin/luci-app-adguardhome) :AdGuardHome广告屏蔽工具的luci设置界面  
 
   luci-app-aria2：aria2下载器  
