@@ -363,7 +363,7 @@ jobs:
       - name: 加载自定义配置并生成配置文件
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
-          cat $GITHUB_WORKSPACE/config/${{ matrix.config }}/{target,luci,utilities,network,other,kmod,image}.config >> $OPENWRT_ROOT_PATH/.config
+          cat $GITHUB_WORKSPACE/config/${{ matrix.config }}/{my}.config >> $OPENWRT_ROOT_PATH/.config
           make defconfig
           ./scripts/diffconfig.sh
           ./scripts/diffconfig.sh >> $LOG_PATH/build1-diffconfig.log
