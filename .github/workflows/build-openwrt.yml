@@ -407,36 +407,6 @@ jobs:
           echo "hack-$kernel_version"  >> $LOG_PATH/cmzj_patch.log
           ls $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version >> $LOG_PATH/cmzj_patch.log
 
-      - name: 添加turboacc fullcone所需的libnftnl、firewall4、nftables补丁
-        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
-        run: |
-          if [ "$(grep -c "^CONFIG_PACKAGE_kmod-nft-fullcone=y$" $OPENWRT_ROOT_PATH/.config)" -ne '0' ] || [ "$(grep -c "^CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_NFT_FULLCONE=y$" $OPENWRT_ROOT_PATH/.config)" -ne '0' ];then
-            kernel_version="$(sed -n '/CONFIG_LINUX_/p' $OPENWRT_ROOT_PATH/.config | sed -e 's/CONFIG_LINUX_//' -e 's/=y//' -e 's/_/./g')"
-            echo kernel_version=$kernel_version
-            echo "::notice ::检测到nft-fullcone设为编译进固件,添加fullcone所需libnftnl、firewall4、nftables补丁"
-            rm -rf $OPENWRT_ROOT_PATH/package/{libs/libnftnl,network/config/firewall4,network/utils/nftables}
-            mkdir -p $OPENWRT_ROOT_PATH/package/{libs/libnftnl,network/config/firewall4,network/utils/nftables}
-            cp -RT $CMZJ_PATCH_ROOT_PATH/firewall4 $OPENWRT_ROOT_PATH/package/network/config/firewall4
-            cp -RT $CMZJ_PATCH_ROOT_PATH/libnftnl $OPENWRT_ROOT_PATH/package/libs/libnftnl
-            cp -RT $CMZJ_PATCH_ROOT_PATH/nftables $OPENWRT_ROOT_PATH/package/network/utils/nftables
-            echo "cmzj_patch" >> $LOG_PATH/cmzj_patch.log
-            ls $CMZJ_PATCH_ROOT_PATH >> $LOG_PATH/cmzj_patch.log
-            echo "libnftnl-file" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/libs/libnftnl >> $LOG_PATH/cmzj_patch.log
-            echo "firewall4-file" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/config/firewall4 >> $LOG_PATH/cmzj_patch.log
-            echo "nftables-file" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/utils/nftables >> $LOG_PATH/cmzj_patch.log
-            echo "firewall4-patches" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/config/firewall4/patches/ >> $LOG_PATH/cmzj_patch.log
-            echo "libnftnl-patches" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/libs/libnftnl/patches/ >> $LOG_PATH/cmzj_patch.log
-            echo "nftables-patches" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/utils/nftables/patches/ >> $LOG_PATH/cmzj_patch.log
-          else
-            echo "::notice ::未检测到nft-fullcone设为编译进固件,跳过添加。"
-          fi
-
       - name: 为openwrt-22.03/v22.03.*升级dnsmasq与libubox
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
