@@ -45,6 +45,5 @@ LuCI插件：
   [luci-app-turboacc](https://github.com/chenmozhijin/turboacc)：Turbo ACC 网络加速  
 
   luci-app-vlmcsd：KMS 服务器  
-  luci-app-webadmin：Web 管理页面设置  
 
   默认管理IP：192.168.1.252
