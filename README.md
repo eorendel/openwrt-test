@@ -47,4 +47,4 @@ LuCI插件：
   luci-app-vlmcsd：KMS 服务器  
   luci-app-webadmin：Web 管理页面设置  
 
-
+  默认管理IP：192.168.1.252
