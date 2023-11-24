@@ -22,7 +22,7 @@
 4. [常见问题](https://github.com/chenmozhijin/OpenWrt-K/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
 
 ## 固件介绍
-基于OpenWrt官方源码编译，使用于软路由，删除了USB、网卡等驱动。
+基于OpenWrt官方源码编译，适用于软路由，删除了USB、网卡等驱动。
 已内置以下软件包：
 
 LuCI插件：  
