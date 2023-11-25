@@ -39,5 +39,6 @@ LuCI插件：
   [luci-app-socat](https://github.com/chenmozhijin/luci-app-socat)：Socat网络工具  
   luci-app-ttyd：ttyd 终端  
   luci-app-vlmcsd：KMS 服务器  
+  luci-app-parentcontrol 家长控制
 
   默认管理IP：192.168.1.252
