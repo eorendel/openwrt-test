@@ -27,11 +27,7 @@
 
 LuCI插件：  
   [luci-app-adguardhome](https://github.com/chenmozhijin/luci-app-adguardhome) :AdGuardHome广告屏蔽工具的luci设置界面  
-
-  luci-app-aria2：aria2下载器  
-
   luci-app-ddns：动态 DNS  
-
   luci-app-fileassistant：文件助手  
   luci-app-firewall：防火墙  
   luci-app-netdata：[Netdata](https://github.com/netdata/netdata) 实时监控  
@@ -42,8 +38,6 @@ LuCI插件：
   [luci-app-passwall](https://github.com/xiaorouji/openwrt-passwall)：passwall  
   [luci-app-socat](https://github.com/chenmozhijin/luci-app-socat)：Socat网络工具  
   luci-app-ttyd：ttyd 终端  
-  [luci-app-turboacc](https://github.com/chenmozhijin/turboacc)：Turbo ACC 网络加速  
-
   luci-app-vlmcsd：KMS 服务器  
 
   默认管理IP：192.168.1.252
