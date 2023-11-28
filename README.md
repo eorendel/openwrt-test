@@ -39,6 +39,7 @@ LuCI插件：
   luci-app-ttyd：ttyd 终端  
   luci-app-vlmcsd：KMS 服务器  
   luci-app-parentcontrol 家长控制
+  
   luci-app-zerotier 内网穿透
 
   默认管理IP：192.168.1.252
