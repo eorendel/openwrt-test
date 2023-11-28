@@ -28,7 +28,6 @@
 LuCI插件：  
   [luci-app-adguardhome](https://github.com/chenmozhijin/luci-app-adguardhome) :AdGuardHome广告屏蔽工具的luci设置界面  
   luci-app-ddns：动态 DNS  
-  luci-app-fileassistant：文件助手  
   luci-app-firewall：防火墙  
   luci-app-netdata：[Netdata](https://github.com/netdata/netdata) 实时监控  
   [luci-app-netspeedtest](https://github.com/sirpdboy/netspeedtest)：网速测试  
@@ -40,6 +39,7 @@ LuCI插件：
   luci-app-ttyd：ttyd 终端  
   luci-app-vlmcsd：KMS 服务器  
   luci-app-parentcontrol 家长控制
+  luci-app-zerotier 内网穿透
 
   默认管理IP：192.168.1.252
 
