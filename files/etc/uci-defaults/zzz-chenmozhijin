@@ -2,7 +2,9 @@
 uci set network.lan.gateway="192.168.1.1"
 uci commit network
 /etc/init.d/network restart
-
+sed -i "/^DISTRIB_DESCRIPTION='/s/'$/ Compiled by 沉默の金'/" /etc/openwrt_release
+[ -d "/etc/init.d" ] && chmod +x /etc/init.d/*
+[ -e "/usr/bin/AdGuardHome/AdGuardHome" ] && chmod 755 /usr/bin/AdGuardHome/AdGuardHome
 
 if [ "$( opkg list-installed 2>/dev/null| grep -c "^dnsmasq")" -ne '0' ];then
   uci set dhcp.@dnsmasq[0].cachesize='0'
